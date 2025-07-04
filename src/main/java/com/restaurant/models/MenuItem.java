@@ -1,22 +1,28 @@
 package com.restaurant.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "menu_items")
 public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
+    @NotBlank(message =  "Mandatory field 'name' is missing or is blank")
     @Column(name = "item_name")
     private String name;
     @Column(name = "description")
     private String description;
+    @NotNull(message =  "Mandatory field 'cost' is missing or is blank")
+    @Positive
     @Column(name = "cost")
-    private int cost;
+    private Integer cost;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -40,7 +46,7 @@ public class MenuItem {
         this.description = description;
     }
 
-    public int getCost() {
+    public Integer getCost() {
         return cost;
     }
 

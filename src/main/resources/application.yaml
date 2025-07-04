@@ -8,3 +8,6 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
