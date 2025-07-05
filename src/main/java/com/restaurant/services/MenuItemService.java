@@ -1,6 +1,7 @@
 package com.restaurant.services;
 
 
+import com.restaurant.mappers.responses.MenuItemResponse;
 import com.restaurant.models.MenuItem;
 import com.restaurant.repositories.MenuItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +17,24 @@ public class MenuItemService {
     @Autowired
     MenuItemRepository repo;
 
-    public MenuItem saveMenuItem(MenuItem item){
-        return repo.save(item);
+    public MenuItemResponse saveMenuItem(MenuItem item){
+        item = repo.save(item);
+        return item.toResponse();
     }
 
-    public List<MenuItem> getAllMenuItems(){
-        return repo.findAll();
+    public List<MenuItemResponse> getAllMenuItems(){
+        return repo.findAll().stream().map(MenuItem::toResponse).toList();
     }
 
     public MenuItem getMenuItemByID(int itemID){
-        return repo.findById((long)itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
+        return repo.findById(itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
     }
 
-    public MenuItem updateMenuItem(int itemID, MenuItem body){
+    public MenuItemResponse getMenuItemID(int itemID){
+        return getMenuItemByID(itemID).toResponse();
+    }
+
+    public MenuItemResponse updateMenuItem(int itemID, MenuItem body){
         MenuItem item = getMenuItemByID(itemID);
 
         if(item != null){
@@ -39,7 +45,7 @@ public class MenuItemService {
             repo.save(item);
         }
 
-        return item;
+        return item.toResponse();
     }
 
     public void deleteMenuItem(int itemID){

@@ -1,9 +1,10 @@
 package com.restaurant.models;
 
+import com.restaurant.mappers.responses.MenuItemResponse;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "menu_items")
@@ -12,15 +13,26 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message =  "Mandatory field 'name' is missing or is blank")
+
     @Column(name = "item_name")
     private String name;
+
     @Column(name = "description")
     private String description;
-    @NotNull(message =  "Mandatory field 'cost' is missing or is blank")
-    @Positive
+
     @Column(name = "cost")
     private Integer cost;
+
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItems> orders = new ArrayList<>();
+
+    public List<OrderItems> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderItems> orders) {
+        this.orders = orders;
+    }
 
     public Integer getId() {
         return id;
@@ -52,6 +64,17 @@ public class MenuItem {
 
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    public MenuItemResponse toResponse(){
+        MenuItemResponse response = new MenuItemResponse();
+
+        response.setCost(cost);
+        response.setName(name);
+        response.setDescription(description);
+        response.setId(id);
+
+        return response;
     }
 
     @Override

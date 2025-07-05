@@ -1,5 +1,7 @@
 package com.restaurant.controllers;
 
+import com.restaurant.mappers.requests.MenuItemRequest;
+import com.restaurant.mappers.responses.MenuItemResponse;
 import com.restaurant.models.MenuItem;
 import com.restaurant.services.MenuItemService;
 import jakarta.validation.Valid;
@@ -19,36 +21,31 @@ public class MenuController {
     private MenuItemService service;
 
     @PostMapping
-    public ResponseEntity<MenuItem> createMenuItem(@Valid @RequestBody MenuItem item){
-        if(item.getId() != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'id' should not be passed in the body");
-        }
-        MenuItem result = service.saveMenuItem(item);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    public ResponseEntity<MenuItemResponse> createMenuItem(@Valid @RequestBody MenuItemRequest body){
+        MenuItem item = body.toEntity();
+        MenuItemResponse response = service.saveMenuItem(item);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<MenuItem>> getAllMenuItems(){
-        List<MenuItem> menuList = service.getAllMenuItems();
+    public ResponseEntity<List<MenuItemResponse>> getAllMenuItems(){
+        List<MenuItemResponse> menuList = service.getAllMenuItems();
 
         return ResponseEntity.status(HttpStatus.OK).body(menuList);
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<MenuItem> getMenuItemByID(@PathVariable(name = "id") int itemID){
-        MenuItem item = service.getMenuItemByID(itemID);
+    public  ResponseEntity<MenuItemResponse> getMenuItemByID(@PathVariable(name = "id") int itemID){
+        MenuItemResponse response = service.getMenuItemID(itemID);
 
-        return ResponseEntity.status(HttpStatus.OK).body(item);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable(name = "id") int itemID, @RequestBody MenuItem body){
-        if(body.getId() != null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Additional fields are present in request body");
-        }
-        MenuItem item = service.updateMenuItem(itemID, body);
-
-        return ResponseEntity.status(HttpStatus.OK).body(item);
+    public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable(name = "id") int itemID, @RequestBody MenuItemRequest body){
+        MenuItem item = body.toEntity();
+        MenuItemResponse response = service.updateMenuItem(itemID, item);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
