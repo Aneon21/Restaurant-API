@@ -2,8 +2,8 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/restaurant_db
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: jamesgrice30
+    username: 
+    password: 
   jpa:
     hibernate:
       ddl-auto: validate
