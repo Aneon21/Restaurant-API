@@ -7,6 +7,7 @@ import com.restaurant.mappers.responses.OrderResponse;
 import com.restaurant.models.MenuItem;
 import com.restaurant.models.OrderItems;
 import com.restaurant.models.Orders;
+import com.restaurant.repositories.MenuItemRepository;
 import com.restaurant.repositories.OrdersRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.query.Order;
@@ -25,7 +26,7 @@ public class OrderService {
     private OrdersRepository rep;
 
     @Autowired
-    private MenuItemService menuItemService;
+    private MenuItemRepository menuItemRepo;
 
     @Transactional
     public OrderResponse saveOrder(OrderRequest order){
@@ -35,7 +36,7 @@ public class OrderService {
         List<OrderItems> orderItems = new ArrayList<>();
 
         for(OrderItemRequest orderItemRequest : order.getItems()){
-            MenuItem item = menuItemService.getMenuItemByID(orderItemRequest.getMenuItemId());
+            MenuItem item = menuItemRepo.findById(orderItemRequest.getMenuItemId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
 
 
             int cost = item.getCost() * orderItemRequest.getQuantity();
@@ -74,12 +75,13 @@ public class OrderService {
         int total = 0;
         order.setDeliveryAddress(request.getDeliveryAddress());
         order.setCustomerName(request.getCustomerName());
+        order.setStatus(request.getStatus());
 
         List<OrderItems> items = new ArrayList<>();
         order.getOrderItems().clear();
         rep.flush();
         for(OrderItemRequest req : request.getItems()){
-            MenuItem menuItem = menuItemService.getMenuItemByID(req.getMenuItemId());
+            MenuItem menuItem = menuItemRepo.findById(req.getMenuItemId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
             int cost = menuItem.getCost() * req.getQuantity();
 
             total += cost;

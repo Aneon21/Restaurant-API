@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody OrderRequest body){
+        if(body.getStatus() != null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Additional field 'status' should not be a part of the request body");
+        }
         OrderResponse response = service.saveOrder(body);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -40,6 +44,9 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> updateOrderById(@PathVariable(name = "id") int orderId, @Valid @RequestBody OrderRequest body){
+        if(body.getStatus() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attribute 'status' cannot be empty or missing");
+        }
         OrderResponse response = service.updateOrderById(orderId, body);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

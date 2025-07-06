@@ -2,14 +2,12 @@ package com.restaurant.controllers;
 
 import com.restaurant.mappers.requests.MenuItemRequest;
 import com.restaurant.mappers.responses.MenuItemResponse;
-import com.restaurant.models.MenuItem;
 import com.restaurant.services.MenuItemService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,15 +20,13 @@ public class MenuController {
 
     @PostMapping
     public ResponseEntity<MenuItemResponse> createMenuItem(@Valid @RequestBody MenuItemRequest body){
-        MenuItem item = body.toEntity();
-        MenuItemResponse response = service.saveMenuItem(item);
+        MenuItemResponse response = service.saveMenuItem(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<MenuItemResponse>> getAllMenuItems(){
         List<MenuItemResponse> menuList = service.getAllMenuItems();
-
         return ResponseEntity.status(HttpStatus.OK).body(menuList);
     }
 
@@ -43,8 +39,7 @@ public class MenuController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemResponse> updateMenuItem(@PathVariable(name = "id") int itemID, @RequestBody MenuItemRequest body){
-        MenuItem item = body.toEntity();
-        MenuItemResponse response = service.updateMenuItem(itemID, item);
+        MenuItemResponse response = service.updateMenuItem(itemID, body);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

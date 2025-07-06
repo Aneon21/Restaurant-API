@@ -1,6 +1,7 @@
 package com.restaurant.services;
 
 
+import com.restaurant.mappers.requests.MenuItemRequest;
 import com.restaurant.mappers.responses.MenuItemResponse;
 import com.restaurant.models.MenuItem;
 import com.restaurant.repositories.MenuItemRepository;
@@ -17,7 +18,8 @@ public class MenuItemService {
     @Autowired
     MenuItemRepository repo;
 
-    public MenuItemResponse saveMenuItem(MenuItem item){
+    public MenuItemResponse saveMenuItem(MenuItemRequest request){
+        MenuItem item = request.toEntity();
         item = repo.save(item);
         return item.toResponse();
     }
@@ -26,16 +28,14 @@ public class MenuItemService {
         return repo.findAll().stream().map(MenuItem::toResponse).toList();
     }
 
-    public MenuItem getMenuItemByID(int itemID){
-        return repo.findById(itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
-    }
 
     public MenuItemResponse getMenuItemID(int itemID){
-        return getMenuItemByID(itemID).toResponse();
+        MenuItem item = repo.findById(itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
+        return item.toResponse();
     }
 
-    public MenuItemResponse updateMenuItem(int itemID, MenuItem body){
-        MenuItem item = getMenuItemByID(itemID);
+    public MenuItemResponse updateMenuItem(int itemID, MenuItemRequest body){
+        MenuItem item = repo.findById(itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
 
         if(item != null){
             item.setCost(body.getCost());
@@ -49,7 +49,7 @@ public class MenuItemService {
     }
 
     public void deleteMenuItem(int itemID){
-        MenuItem item = getMenuItemByID(itemID);
+        MenuItem item = repo.findById(itemID).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No menu item was found for the given id"));
 
         if(item != null){
             repo.delete(item);
